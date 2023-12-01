@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
     const form = new formidable.IncomingForm();
 
     form.parse(req, async (err, fields, files) => {
-      
+
       if (err) {
         console.error("Error parsing the form:", err);
         res.status(500).send("Internal Server Error");
@@ -47,6 +47,7 @@ module.exports = async (req, res) => {
 
       client.login(token);
     });
+  } else {
+    res.status(405).send("Method Not Allowed");
   }
-  res.status(405).send("Method Not Allowed");
 };
