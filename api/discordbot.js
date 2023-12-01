@@ -31,10 +31,12 @@ module.exports = async (req, res) => {
       client.once("ready", async () => {
         try {
           const channel = await client.channels.fetch(channelID);
-          const message = await channel.send({ content: 'Here is the uploaded file:', files: [attachment] });
+          const sentMessage = await channel.send({ content: 'Here is the uploaded file:', files: [attachment] });
+
+          const fetchedMessage = await channel.messages.fetch(sentMessage.id);
 
           client.destroy();
-          res.status(200).json({ messageInfo: message });
+          res.status(200).json({ messageInfo: fetchedMessage });
         } catch (error) {
           console.error("Bot error:", error);
           client.destroy();
