@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
         res.status(500).send("Internal Server Error");
         return;
       }
-
+      console.log('Received files:', files)
       // Process the file here
       // For simplicity, assuming there's one file and it's available as 'files.fileToUpload'
       const file = files.fileToUpload;
