@@ -16,13 +16,14 @@ module.exports = async (req, res) => {
       console.log("Received files:", files);
 
       const fileData = files.fileToUpload[0];
+      const email = fields.email;
 
       if (!fileData) res.status(400).send("No file uploaded");
       const attachment = new AttachmentBuilder(fileData.filepath, {
         name: fileData.originalFilename,
       });
 
-      // Initialize Discord client and send the file
+      // Initialize Discord client
       const client = new Client({
         intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
       });
@@ -30,8 +31,9 @@ module.exports = async (req, res) => {
       client.once("ready", async () => {
         try {
           const channel = await client.channels.fetch(channelID);
+          const content = `Email: ${email}\nFilename: ${fileData.originalFilename}`
           const sentMessage = await channel.send({
-            content: "Here is the uploaded file:",
+            content,
             files: [attachment],
           });
 
@@ -45,8 +47,8 @@ module.exports = async (req, res) => {
           } else {
             res.status(500).send("Failed to send the file");
           }
+
         } catch (error) {
-          console.error("Bot error:", error);
           client.destroy();
           res.status(500).send("An error occurred with the bot");
         }
