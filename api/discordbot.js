@@ -8,15 +8,20 @@ module.exports = async (req, res) => {
     const form = new formidable.IncomingForm();
 
     form.parse(req, async (err, fields, files) => {
+      
       if (err) {
         console.error("Error parsing the form:", err);
         res.status(500).send("Internal Server Error");
         return;
       }
-      console.log('Received files:', files)
-      // Process the file here
-      // For simplicity, assuming there's one file and it's available as 'files.fileToUpload'
-      const file = files.fileToUpload;
+      console.log("Received files:", files);
+
+      const fileData = files.fileToUpload[0];
+
+      if (!fileData) res.status(400).send("No file uploaded");
+      const attachment = new AttachmentBuilder(fileData.filepath, {
+        name: fileData.originalFilename,
+      });
 
       // Initialize Discord client and send the file
       const client = new Client({
@@ -42,8 +47,6 @@ module.exports = async (req, res) => {
 
       client.login(token);
     });
-
-  } else {
-    res.status(405).send("Method Not Allowed");
   }
+  res.status(405).send("Method Not Allowed");
 };
