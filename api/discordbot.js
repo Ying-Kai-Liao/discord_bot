@@ -31,10 +31,7 @@ module.exports = async (req, res) => {
       client.once("ready", async () => {
         try {
           const channel = await client.channels.fetch(channelID);
-          const message = await channel.send({
-            content: "Here is the uploaded file:",
-            files: [new AttachmentBuilder(file.filepath)],
-          });
+          const message = await channel.send({ content: 'Here is the uploaded file:', files: [attachment] });
 
           client.destroy();
           res.status(200).json({ messageInfo: message });
