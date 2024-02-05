@@ -6,7 +6,7 @@ const token = process.env.TOKEN;
 module.exports = async (req, res) => {
   // Set CORS headers for localhost:3000
   res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000", "https://chiangs-site.vercel.app/"); // Only allow requests from localhost:3000
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000", "https://chiangs-site.vercel.app/", "https://www.v-angel.com", "https://v-angel.com"); // Only allow requests from localhost:3000
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,POST");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -30,13 +30,18 @@ module.exports = async (req, res) => {
       }
       console.log("Received files:", files);
 
-      const fileData = files.fileToUpload[0];
+      const fileDataOne = files.fileToUpload[0];
+      const fileDataTwo = files.fileToUpload[1];
       const email = fields.email;
+      const method = fields.method;
 
-      if (!fileData) res.status(400).send("No file uploaded");
-      const attachment = new AttachmentBuilder(fileData.filepath, {
-        name: fileData.originalFilename,
+      if (!fileDataOne) res.status(400).send("No file uploaded");
+      const attachmentOne = new AttachmentBuilder(fileDataOne.filepath, {
+        name: fileDataOne.originalFilename,
       });
+      const attachmentTwo = new AttachmentBuilder(fileDataTwo.filepath, {
+        name: fileDataOne.originalFilename,
+      })
 
       // Initialize Discord client
       const client = new Client({
@@ -46,10 +51,10 @@ module.exports = async (req, res) => {
       client.once("ready", async () => {
         try {
           const channel = await client.channels.fetch(channelID);
-          const content = `Email: ${email}\nFilename: ${fileData.originalFilename}`;
+          const content = `${method} ${email}`;
           const sentMessage = await channel.send({
             content,
-            files: [attachment],
+            files: [attachmentOne, attachmentTwo],
           });
 
           const attachmentData = sentMessage.attachments.first();
